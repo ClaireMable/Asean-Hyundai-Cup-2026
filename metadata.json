@@ -1,0 +1,6 @@
+{
+  "name": "KAPSUL4D - Portal Resmi Piala AFF Hyundai Cup 2026",
+  "description": "Kapsul4D Portal Resmi Piala AFF Hyundai Cup 2026, Jadwal Pertandingan, Klasemen Grup ASEAN, Prediksi Handicap, Top Skor & Bonus Sportsbook.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

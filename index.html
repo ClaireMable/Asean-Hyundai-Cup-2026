@@ -1,0 +1,321 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <!-- ═══════════════════════════════════════
+         BASIC & SAFEGUARD
+    ═══════════════════════════════════════ -->
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script>
+      (function() {
+        var props = ['fetch', 'Request', 'Response', 'Headers'];
+        props.forEach(function(prop) {
+          try {
+            var original = window[prop];
+            var val = original;
+            Object.defineProperty(window, prop, {
+              get: function() { return val; },
+              set: function(newVal) { val = newVal; },
+              configurable: true,
+              enumerable: true
+            });
+          } catch (e) {
+            try {
+              var proto = Object.getPrototypeOf(window) || (typeof Window !== 'undefined' && Window.prototype);
+              if (proto) {
+                var desc = Object.getOwnPropertyDescriptor(proto, prop);
+                var valProto = proto[prop];
+                Object.defineProperty(proto, prop, {
+                  get: function() { return valProto; },
+                  set: function(newVal) { valProto = newVal; },
+                  configurable: true,
+                  enumerable: desc ? desc.enumerable : true
+                });
+              }
+            } catch (err) {}
+          }
+        });
+      })();
+    </script>
+    <meta name="google-site-verification" content="bRtXG2HSjJ64jMHdkPCvvsnBg1oFNmG6nAH16fjOwmI" />
+
+    <!-- ═══════════════════════════════════════
+         SEO CORE
+         Title : 56 karakter ✓ (limit <60)
+         Desc  : 145 karakter ✓ (limit <155)
+    ═══════════════════════════════════════ -->
+    <title>KAPSUL4D – Live Score Piala AFF 2026 | Jadwal &amp; Klasemen</title>
+
+    <meta
+      name="description"
+      content="Live score Timnas Indonesia di Piala AFF 2026! Jadwal lengkap, klasemen Grup A, hasil & prediksi bola. Update otomatis — cek sekarang di KAPSUL4D!"
+    />
+
+    <!-- Meta Keywords: Google abaikan sejak 2009, tetapi Bing / Yandex / DuckDuckGo
+         masih membacanya. Dipertahankan untuk menjangkau traffic multi-engine. -->
+    <meta
+      name="keywords"
+      content="KAPSUL4D, Piala AFF 2026, AFF Championship 2026, ASEAN Hyundai Cup 2026, Live Score Timnas Indonesia, Jadwal Timnas Indonesia AFF, Klasemen Grup A AFF 2026, Hasil Pertandingan AFF, Top Skor AFF 2026, Prediksi Bola AFF, Live Streaming Timnas, Skor Langsung Piala AFF, Jadwal Bola Malam Ini"
+    />
+
+    <meta name="author"        content="KAPSUL4D" />
+    <meta name="robots"        content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+    <meta name="language"      content="id" />
+    <meta name="revisit-after" content="1 days" />
+    <meta name="referrer"      content="strict-origin-when-cross-origin" />
+    <meta name="theme-color"   content="#0B1020" />
+    <meta name="format-detection" content="telephone=no" />
+
+    <!-- Geo / Local SEO — fokus trafik organik Indonesia -->
+    <meta name="geo.region"    content="ID" />
+    <meta name="geo.placename" content="Indonesia" />
+
+    <!-- ═══════════════════════════════════════
+         CANONICAL & HREFLANG
+    ═══════════════════════════════════════ -->
+    <link rel="canonical"  href="https://kapsul4d-worldcup.vercel.app/" />
+    <link rel="alternate"  hreflang="id"        href="https://kapsul4d-worldcup.vercel.app/" />
+    <link rel="alternate"  hreflang="x-default" href="https://kapsul4d-worldcup.vercel.app/" />
+
+    <!-- ═══════════════════════════════════════
+         FAVICON
+    ═══════════════════════════════════════ -->
+    <link rel="icon"            type="image/png" sizes="32x32"   href="https://ik.imagekit.io/srri8ez3b/kapsul4d-transparent.png" />
+    <link rel="icon"            type="image/png" sizes="16x16"   href="https://ik.imagekit.io/srri8ez3b/kapsul4d-transparent.png" />
+    <link rel="apple-touch-icon"                 sizes="180x180" href="https://ik.imagekit.io/srri8ez3b/kapsul4d-transparent.png" />
+
+    <!-- ═══════════════════════════════════════
+         PERFORMANCE & FONTS
+    ═══════════════════════════════════════ -->
+    <link rel="preconnect"   href="https://ik.imagekit.io" crossorigin />
+    <link rel="dns-prefetch" href="https://ik.imagekit.io" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800;900&family=Orbitron:wght@600;800;900&family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@700;800;900&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+
+    <!-- ═══════════════════════════════════════
+         OPEN GRAPH
+    ═══════════════════════════════════════ -->
+    <meta property="og:type"         content="website" />
+    <meta property="og:site_name"    content="KAPSUL4D" />
+    <meta property="og:locale"       content="id_ID" />
+    <meta property="og:url"          content="https://kapsul4d-worldcup.vercel.app/" />
+    <meta property="og:title"        content="KAPSUL4D – Live Score Piala AFF 2026 | Jadwal &amp; Klasemen" />
+    <meta
+      property="og:description"
+      content="Live score Timnas Indonesia di Piala AFF 2026! Jadwal lengkap, klasemen Grup A, hasil & prediksi bola. Update otomatis — cek sekarang di KAPSUL4D!"
+    />
+    <meta property="og:image"        content="https://ik.imagekit.io/srri8ez3b/kapsul4dlogo" />
+    <meta property="og:image:width"  content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt"    content="KAPSUL4D – Dashboard Live Score Piala AFF 2026" />
+
+    <!-- ═══════════════════════════════════════
+         TWITTER / X
+    ═══════════════════════════════════════ -->
+    <meta name="twitter:card"        content="summary_large_image" />
+    <meta name="twitter:site"        content="@KAPSUL4D" />
+    <meta name="twitter:url"         content="https://kapsul4d-worldcup.vercel.app/" />
+    <meta name="twitter:title"       content="KAPSUL4D – Live Score Piala AFF 2026 | Jadwal &amp; Klasemen" />
+    <meta
+      name="twitter:description"
+      content="Live score Timnas Indonesia di Piala AFF 2026! Jadwal lengkap, klasemen Grup A, hasil & prediksi bola. Update otomatis — cek sekarang di KAPSUL4D!"
+    />
+    <meta name="twitter:image"       content="https://ik.imagekit.io/srri8ez3b/kapsul4dlogo" />
+    <meta name="twitter:image:alt"   content="KAPSUL4D – Dashboard Live Score Piala AFF 2026" />
+
+    <!-- ═══════════════════════════════════════
+         MOBILE / PWA
+    ═══════════════════════════════════════ -->
+    <meta name="apple-mobile-web-app-capable"          content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title"            content="KAPSUL4D" />
+    <meta name="mobile-web-app-capable"                content="yes" />
+
+    <!-- ═══════════════════════════════════════
+         SCHEMA MARKUP  (JSON-LD)
+    ═══════════════════════════════════════ -->
+
+    <!-- WebSite Schema -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "KAPSUL4D",
+      "url": "https://kapsul4d-worldcup.vercel.app/",
+      "description": "Platform visual interaktif Piala AFF 2026 dengan live score Timnas Indonesia, jadwal pertandingan, klasemen Grup A, hasil, dan prediksi bola real-time.",
+      "inLanguage": "id-ID",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": {
+          "@type": "EntryPoint",
+          "urlTemplate": "https://kapsul4d-worldcup.vercel.app/?q={search_term_string}"
+        },
+        "query-input": "required name=search_term_string"
+      }
+    }
+    </script>
+
+    <!-- SportsEvent Schema -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SportsEvent",
+      "name": "Piala AFF 2026",
+      "alternateName": [
+        "AFF Championship 2026",
+        "ASEAN Hyundai Cup 2026",
+        "ASEAN Championship 2026",
+        "Kejuaraan Perbara 2026"
+      ],
+      "startDate": "2026-07-24",
+      "endDate": "2026-08-26",
+      "eventStatus": "https://schema.org/EventScheduled",
+      "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+      "sport": "Football",
+      "location": {
+        "@type": "Place",
+        "name": "Asia Tenggara",
+        "address": {
+          "@type": "PostalAddress",
+          "addressRegion": "Southeast Asia"
+        }
+      },
+      "organizer": {
+        "@type": "Organization",
+        "name": "ASEAN Football Federation (AFF)",
+        "url": "https://www.affchampionship.com"
+      },
+      "url": "https://kapsul4d-worldcup.vercel.app/",
+      "image": "https://ik.imagekit.io/srri8ez3b/kapsul4dlogo",
+      "description": "Pantau live score Timnas Indonesia, jadwal, klasemen Grup A, dan prediksi Piala AFF 2026 secara real-time di KAPSUL4D.",
+      "competitor": [
+        { "@type": "SportsTeam", "name": "Indonesia",   "sport": "Football" },
+        { "@type": "SportsTeam", "name": "Vietnam",     "sport": "Football" },
+        { "@type": "SportsTeam", "name": "Thailand",    "sport": "Football" },
+        { "@type": "SportsTeam", "name": "Malaysia",    "sport": "Football" },
+        { "@type": "SportsTeam", "name": "Singapura",   "sport": "Football" },
+        { "@type": "SportsTeam", "name": "Kamboja",     "sport": "Football" },
+        { "@type": "SportsTeam", "name": "Filipina",    "sport": "Football" },
+        { "@type": "SportsTeam", "name": "Myanmar",     "sport": "Football" },
+        { "@type": "SportsTeam", "name": "Laos",        "sport": "Football" },
+        { "@type": "SportsTeam", "name": "Timor-Leste", "sport": "Football" }
+      ]
+    }
+    </script>
+  </head>
+  <body class="bg-[#030712] text-[#E0F2FE] antialiased selection:bg-[#0284C7] selection:text-[#FFFFFF] font-sans">
+    <div id="root"></div>
+
+    <!-- ══════════════════════════════════════════════════════════
+         NOSCRIPT — Fallback Googlebot (crawl tanpa JS)
+    ══════════════════════════════════════════════════════════ -->
+    <noscript>
+      <style>
+        body{background:#0B1020;color:#E2E8F0;font-family:sans-serif;
+          padding:1.5rem;max-width:860px;margin:0 auto}
+        h1,h2,h3{color:#F1F5F9;margin:1.2rem 0 .45rem}
+        h1{font-size:1.35rem}h2{font-size:1.05rem}
+        p,li{color:#94A3B8;line-height:1.7;font-size:.87rem}
+        ul{padding-left:1.2rem;margin:.4rem 0}
+        strong{color:#10B981}
+      </style>
+      <h1>KAPSUL4D – Live Score &amp; Jadwal Piala AFF 2026 (ASEAN Hyundai Cup)</h1>
+      <p>Platform live score, jadwal, klasemen, dan prediksi <strong>Piala AFF 2026</strong>
+      real-time. Aktifkan JavaScript untuk pengalaman interaktif penuh.</p>
+
+      <h2>Jadwal Timnas Indonesia Piala AFF 2026</h2>
+      <ul>
+        <li>27 Juli 2026 — <strong>Indonesia vs Kamboja</strong> · Stadion Pakansari · 20.00 WIB</li>
+        <li>3 Agustus 2026 — <strong>Vietnam vs Indonesia</strong> · Stadion My Dinh · 20.30 WIB</li>
+        <li>7 Agustus 2026 — <strong>Singapura vs Indonesia</strong> · Stadion Jalan Besar · 20.00 WIB</li>
+      </ul>
+
+      <h2>Klasemen Grup A &amp; B AFF 2026</h2>
+      <p><strong>Grup A:</strong> Vietnam (juara bertahan), Indonesia, Singapura, Kamboja, Timor-Leste.<br/>
+      <strong>Grup B:</strong> Thailand, Malaysia, Filipina, Myanmar, Laos.<br/>
+      Dua tim teratas tiap grup lolos ke semifinal Piala AFF 2026.</p>
+
+      <h2>Prediksi &amp; Head to Head</h2>
+      <ul>
+        <li>Prediksi skor AFF 2026 hari ini</li>
+        <li>Head to head Indonesia vs Vietnam · laga 3 Agustus</li>
+        <li>Head to head Indonesia vs Singapura · penentu lolos semifinal</li>
+        <li>Peluang timnas Indonesia juara Piala AFF 2026 di bawah John Herdman</li>
+      </ul>
+
+      <h2>Skuad Timnas Indonesia AFF 2026</h2>
+      <p>Skuad Timnas Indonesia AFF 2026 dilatih <strong>John Herdman</strong>.
+      Pantau kondisi Marselino Ferdinan, top skor AFF 2026, dan statistik pemain terbaik
+      ASEAN Championship 2026 di KAPSUL4D.</p>
+
+      <h2>Venue &amp; Cara Nonton</h2>
+      <p>Siaran langsung Piala AFF 2026 di <strong>RCTI</strong>.
+      Laga kandang Garuda di <strong>Stadion Pakansari, Cibinong, Bogor</strong>.
+      Final Piala AFF: 26 Agustus 2026. Vietnam juara bertahan AFF.</p>
+    </noscript>
+
+    <!-- ══════════════════════════════════════════════════════════
+         FAQ SCHEMA JSON-LD
+    ══════════════════════════════════════════════════════════ -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Kapan Piala AFF 2026 berlangsung?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Piala AFF 2026 (ASEAN Hyundai Cup 2026) berlangsung 24 Juli hingga 26 Agustus 2026. Fase grup: 24 Juli–8 Agustus. Semifinal: 15–22 Agustus. Final: 26 Agustus 2026."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Indonesia ada di grup mana di Piala AFF 2026?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Timnas Indonesia berada di Grup A bersama Vietnam (juara bertahan), Singapura, Kamboja, dan Timor-Leste. Laga kandang di Stadion Pakansari, Cibinong, Bogor."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Di mana nonton live streaming Piala AFF 2026?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Siaran langsung Piala AFF 2026 tersedia di RCTI. KAPSUL4D menyajikan live score, jadwal, dan klasemen real-time."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Kapan jadwal Indonesia vs Vietnam di AFF 2026?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Timnas Indonesia menghadapi Vietnam pada 3 Agustus 2026 pukul 20.30 WIB di Stadion Pakansari, Cibinong."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Siapa pelatih Timnas Indonesia di Piala AFF 2026?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Timnas Indonesia di Piala AFF 2026 dilatih oleh John Herdman."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Berapa poin yang dibutuhkan Indonesia untuk lolos semifinal AFF?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Indonesia perlu finis di posisi 2 besar Grup A dari 5 tim untuk lolos ke semifinal Piala AFF 2026."
+          }
+        }
+      ]
+    }
+    </script>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+
+
