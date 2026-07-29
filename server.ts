@@ -101,8 +101,8 @@ async function startServer() {
     });
   }
 
-  app.listen(PORT, "0.0.0.0", () => {
-    console.log(`Kapsul4D World Cup server running on http://0.0.0.0:${PORT}`);
+  app.listen(3000, "localhost", () => {
+    console.log(`Kapsul4D Asean Hyundai Cup server running on http://localhost:3000/`);
   });
 }
 
