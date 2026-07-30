@@ -21,7 +21,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSelectTab }) => {
           className="block group relative cursor-pointer overflow-hidden rounded-2xl sm:rounded-3xl border-3 sm:border-4 border-[#0256C4] bg-[#FFFFFF] shadow-[0_10px_35px_rgba(2,86,196,0.25)] hover:border-[#1D4ED8] hover:shadow-[0_15px_45px_rgba(2,86,196,0.35)] transition-all duration-300"
         >
           <img
-            src="https://ik.imagekit.io/srri8ez3b/affcup2026"
+            src="https://ik.imagekit.io/srri8ez3b/pialaaff2026"
             alt="PIALA AFF U19 CHAMPIONSHIP 2026 KAPSUL4D"
             className="w-full h-auto object-cover object-center group-hover:scale-[1.01] transition-transform duration-500"
             loading="eager"
