@@ -1,8 +1,9 @@
 export default async function handler(req: any, res: any) {
   try {
-    let response = await fetch("https://site.api.espn.com/apis/site/v2/sports/soccer/aff.championship/scoreboard");
+    const dates = req.query?.dates || "20260724-20260826";
+    let response = await fetch(`https://site.api.espn.com/apis/site/v2/sports/soccer/aff.championship/scoreboard?dates=${dates}`);
     if (!response.ok) {
-      response = await fetch("https://site.api.espn.com/apis/site/v2/sports/soccer/asean.championship/scoreboard");
+      response = await fetch(`https://site.api.espn.com/apis/site/v2/sports/soccer/asean.championship/scoreboard?dates=${dates}`);
     }
     
     if (response.ok) {
