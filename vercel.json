@@ -1,9 +1,5 @@
 {
   "rewrites": [
-    { "source": "/api/health", "destination": "/api/health.ts" },
-    { "source": "/api/espn/scoreboard", "destination": "/api/espn/scoreboard.ts" },
-    { "source": "/api/espn/stats", "destination": "/api/espn/stats.ts" },
-    { "source": "/api/espn/standings", "destination": "/api/espn/standings.ts" },
-    { "source": "/(.*)", "destination": "/index.html" }
+    { "source": "/((?!api/.*).*)", "destination": "/index.html" }
   ]
 }
