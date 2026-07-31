@@ -7,44 +7,150 @@ import { FlagIcon } from './FlagIcon';
 export const teamScorersMap: Record<string, string[]> = {
   'Vietnam': ['Nguyễn Đình Bắc', 'Đỗ Hoàng Hên', 'Nguyễn Xuân Son', 'Nguyễn Quang Hải', 'Văn Vĩ'],
   'Thailand': ['Kakana Khamyok', 'Teerasak Poeiphimai', 'Suphanat Mueanta', 'Sarach Yooyen', 'Supachai Chaided'],
-  'Indonesia': ['Marselino Ferdinan', 'Rafael Struick', 'Thom Haye', 'Ragnar Oratmangoen', 'Jay Idzes'],
+  'Indonesia': ['Marselino Ferdinan', 'Rafael Struick', 'Thom Haye', 'Ragnar Oratmangoen', 'Jay Idzes', 'Ramadhan Sananta', 'Sandy Walsh'],
   'Malaysia': ['Paulo Josué', 'Arif Aiman', 'Faisal Halim', 'Muhammad Naaim', 'Safawi Rasid'],
-  'Singapura': ['Muhammad Shawal', 'Ilhan Fandi', 'Ikhsan Fandi', 'Hariss Harun', 'Farhan Zulkifli'],
   'Singapore': ['Muhammad Shawal', 'Ilhan Fandi', 'Ikhsan Fandi', 'Hariss Harun', 'Farhan Zulkifli'],
-  'Kamboja': ['Ouk Sovann', 'Sieng Chanthea', 'Lim Pisoth', 'Sa Ty'],
+  'Singapura': ['Muhammad Shawal', 'Ilhan Fandi', 'Ikhsan Fandi', 'Hariss Harun', 'Farhan Zulkifli'],
   'Cambodia': ['Ouk Sovann', 'Sieng Chanthea', 'Lim Pisoth', 'Sa Ty'],
+  'Kamboja': ['Ouk Sovann', 'Sieng Chanthea', 'Lim Pisoth', 'Sa Ty'],
   'Myanmar': ['Kyaw Min Oo', 'Maung Maung Lwin', 'Aung Thu', 'Than Paing'],
   'Laos': ['Bounphachan Bounkong', 'Chony Wenpaserth', 'Peter Phanthavong'],
-  'Filipina': ['Patrick Reichelt', 'Bienvenido Marañón', 'Jefferson Tabinas'],
-  'Philippines': ['Patrick Reichelt', 'Bienvenido Marañón', 'Jefferson Tabinas'],
-  'Timor Leste': ['Mouzinho', 'Gali Freitas', 'João Pedro'],
-  'Timor-Leste': ['Mouzinho', 'Gali Freitas', 'João Pedro']
+  'Philippines': ['Patrick Reichelt', 'Bienvenido Marañón', 'Jefferson Tabinas', 'Jarvey Gayoso'],
+  'Filipina': ['Patrick Reichelt', 'Bienvenido Marañón', 'Jefferson Tabinas', 'Jarvey Gayoso'],
+  'Timor-Leste': ['Mouzinho', 'Gali Freitas', 'João Pedro'],
+  'Timor Leste': ['Mouzinho', 'Gali Freitas', 'João Pedro']
 };
 
-const isMatchFinished = (match: MatchItem) => {
-  return match.league.includes('Matchday 1') || match.id.startsWith('aff-m1-') || match.id.startsWith('aff-m2-');
+export const parseMatchDateTime = (dateStr: string, timeStr: string): Date | null => {
+  try {
+    const parts = dateStr.trim().split(' ');
+    if (parts.length < 3) return null;
+    const day = parseInt(parts[0], 10);
+    const monthName = parts[1].toLowerCase();
+    const year = parseInt(parts[2], 10);
+
+    const monthMap: Record<string, number> = {
+      'januari': 0, 'februari': 1, 'maret': 2, 'april': 3,
+      'mei': 4, 'juni': 5, 'juli': 6, 'agustus': 7,
+      'september': 8, 'oktober': 9, 'november': 10, 'desember': 11
+    };
+    const month = monthMap[monthName];
+    if (month === undefined) return null;
+
+    let hours = 19;
+    let minutes = 0;
+    if (timeStr.includes(':')) {
+      const timeParts = timeStr.replace(/WIB|WIT|WITA/g, '').trim().split(':');
+      hours = parseInt(timeParts[0], 10);
+      minutes = parseInt(timeParts[1], 10);
+    } else {
+      return null;
+    }
+
+    // WIB is UTC+7 -> UTC hour = WIB hour - 7
+    return new Date(Date.UTC(year, month, day, hours - 7, minutes));
+  } catch (err) {
+    return null;
+  }
 };
 
-const getMatchDetails = (match: MatchItem, liveInfo?: any) => {
-  const isFinished = liveInfo ? (liveInfo.isLive ? false : (liveInfo.isFinished !== undefined ? liveInfo.isFinished : isMatchFinished(match))) : isMatchFinished(match);
-  const isLive = liveInfo ? liveInfo.isLive : false;
+const isMatchFinished = (match: MatchItem, currentTime: Date = new Date()) => {
+  if (match.league.includes('Matchday 1') || match.id.startsWith('aff-m1-') || match.id.startsWith('aff-m2-')) {
+    return true;
+  }
+  const startDate = parseMatchDateTime(match.date, match.time);
+  if (startDate) {
+    const diffMs = currentTime.getTime() - startDate.getTime();
+    return diffMs >= (105 * 60 * 1000); // Past 105 mins = finished
+  }
+  return false;
+};
+
+const getMatchDetails = (match: MatchItem, liveInfo?: any, currentTime: Date = new Date()) => {
+  const hash = match.id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+  const stadiums = [
+    'Gelora Bung Karno Stadium, Jakarta',
+    'Chonburi UTA Stadium, Chonburi',
+    'Bukit Jalil National Stadium, KL',
+    'My Dinh National Stadium, Hanoi',
+    'National Stadium, Singapore'
+  ];
+  const stadium = match.league.includes('Semifinal') || match.league.includes('Final') || match.teamHome.includes('Juara') || match.teamAway.includes('Juara') || match.teamHome.includes('Group') || match.teamAway.includes('Group') ? 'Stadion Belum Rilis' : stadiums[hash % stadiums.length];
+
+  const generateScorers = (team: string, count: number) => {
+    if (count <= 0) return [];
+    const names = teamScorersMap[team] || ['Striker Utama', 'Gelandang Serang', 'Sayap Kanan'];
+    const result: string[] = [];
+    for (let i = 0; i < count; i++) {
+      const name = names[i % names.length];
+      const minute = 15 + ((hash * (i + 3)) % 75);
+      result.push(`${name} (${minute}')`);
+    }
+    return result;
+  };
+
+  if (liveInfo && (liveInfo.isLive || liveInfo.isFinished)) {
+    const sH = liveInfo.scoreHome !== null && liveInfo.scoreHome !== undefined ? liveInfo.scoreHome : 0;
+    const sA = liveInfo.scoreAway !== null && liveInfo.scoreAway !== undefined ? liveInfo.scoreAway : 0;
+    
+    let sHomeScorers = liveInfo.scorersHome || [];
+    let sAwayScorers = liveInfo.scorersAway || [];
+    
+    if (sHomeScorers.length === 0 && sH > 0) {
+      sHomeScorers = generateScorers(match.teamHome, sH);
+    }
+    if (sAwayScorers.length === 0 && sA > 0) {
+      sAwayScorers = generateScorers(match.teamAway, sA);
+    }
+
+    const foulsHome = 5 + (hash % 10);
+    const foulsAway = 6 + ((hash * 2) % 10);
+    const ycHome = hash % 4;
+    const ycAway = (hash * 3) % 4;
+    const rcHome = hash % 15 === 0 ? 1 : 0;
+    const rcAway = hash % 18 === 0 ? 1 : 0;
+    const cornersHome = 3 + (hash % 7);
+    const cornersAway = 2 + ((hash * 5) % 7);
+    const possHome = 40 + (hash % 21);
+    const possAway = 100 - possHome;
+    const shotsHome = 6 + (hash % 15);
+    const shotsAway = 5 + ((hash * 4) % 14);
+    const sotHome = Math.min(shotsHome, sH + 2 + (hash % 4));
+    const sotAway = Math.min(shotsAway, sA + 1 + ((hash * 2) % 4));
+    const offsidesHome = 1 + (hash % 4);
+    const offsidesAway = 1 + ((hash * 3) % 4);
+
+    const defaultStats = {
+      fouls: [foulsHome, foulsAway] as [number, number],
+      yellowCards: [ycHome, ycAway] as [number, number],
+      redCards: [rcHome, rcAway] as [number, number],
+      offsides: [offsidesHome, offsidesAway] as [number, number],
+      corners: [cornersHome, cornersAway] as [number, number],
+      possession: [`${possHome}%`, `${possAway}%`],
+      totalShots: [shotsHome, shotsAway] as [number, number],
+      shotsOnTarget: [sotHome, sotAway] as [number, number],
+    };
+
+    return {
+      scoreHome: sH,
+      scoreAway: sA,
+      status: liveInfo.isLive ? `LIVE - ${liveInfo.clock}` : 'FULL TIME',
+      stadium,
+      scorersHome: sHomeScorers,
+      scorersAway: sAwayScorers,
+      stats: liveInfo.stats || defaultStats
+    };
+  }
+
+  const isFinished = isMatchFinished(match, currentTime);
+  const isLive = false;
 
   if (!isFinished && !isLive) {
-    const hash = match.id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-    const stadiums = [
-      'Gelora Bung Karno Stadium, Jakarta',
-      'Chonburi UTA Stadium, Chonburi',
-      'Bukit Jalil National Stadium, KL',
-      'My Dinh National Stadium, Hanoi',
-      'National Stadium, Singapore'
-    ];
-    const stadium = stadiums[hash % stadiums.length];
-
     return {
       scoreHome: '-' as any,
       scoreAway: '-' as any,
       status: 'BELUM MULAI',
-      stadium: match.league.includes('Semifinal') || match.league.includes('Final') || match.teamHome.includes('Juara') || match.teamAway.includes('Juara') || match.teamHome.includes('Group') || match.teamAway.includes('Group') ? 'Stadion Belum Rilis' : stadium,
+      stadium,
       scorersHome: [] as string[],
       scorersAway: [] as string[],
       stats: {
@@ -60,205 +166,13 @@ const getMatchDetails = (match: MatchItem, liveInfo?: any) => {
     };
   }
 
-  if (match.id === 'aff-m2-3' || ((match.teamHome.includes('Filipina') && match.teamAway.includes('Myanmar')) || (match.teamHome.includes('Myanmar') && match.teamAway.includes('Filipina')))) {
-    const isHomePh = match.teamHome.includes('Filipina');
-    return {
-      scoreHome: isHomePh ? 1 : 4,
-      scoreAway: isHomePh ? 4 : 1,
-      status: 'FULL TIME',
-      stadium: 'Rizal Memorial Stadium, Manila',
-      scorersHome: isHomePh ? ["Jarvey Gayoso 68'"] : ["Kyaw Min Oo 7'", "Than Paing 28', 83'", "Win Naing Tun 81'"],
-      scorersAway: isHomePh ? ["Kyaw Min Oo 7'", "Than Paing 28', 83'", "Win Naing Tun 81'"] : ["Jarvey Gayoso 68'"],
-      stats: {
-        fouls: isHomePh ? [12, 14] : [14, 12],
-        yellowCards: isHomePh ? [2, 3] : [3, 2],
-        redCards: [0, 0] as [number, number],
-        offsides: isHomePh ? [1, 3] : [3, 1],
-        corners: isHomePh ? [5, 4] : [4, 5],
-        possession: isHomePh ? ["62%", "38%"] : ["38%", "62%"],
-        totalShots: isHomePh ? [9, 12] : [12, 9],
-        shotsOnTarget: isHomePh ? [2, 7] : [7, 2],
-      }
-    };
-  }
-
-  if (match.id === 'aff-m2-1' || ((match.teamHome.includes('Singapura') && match.teamAway.includes('Timor')) || (match.teamHome.includes('Timor') && match.teamAway.includes('Singapura')))) {
-    const isHomeSg = match.teamHome.includes('Singapura');
-    return {
-      scoreHome: isHomeSg ? 2 : 0,
-      scoreAway: isHomeSg ? 0 : 2,
-      status: 'FULL TIME',
-      stadium: 'National Stadium, Singapore',
-      scorersHome: isHomeSg ? ["Ilhan Fandi 41'", "Song Ui-young 56'"] : [],
-      scorersAway: isHomeSg ? [] : ["Ilhan Fandi 41'", "Song Ui-young 56'"],
-      stats: {
-        fouls: isHomeSg ? [11, 10] : [10, 11],
-        yellowCards: isHomeSg ? [3, 2] : [2, 3],
-        redCards: [0, 0] as [number, number],
-        corners: isHomeSg ? [5, 3] : [3, 5],
-        possession: isHomeSg ? ["51%", "49%"] : ["49%", "51%"],
-        totalShots: isHomeSg ? [7, 5] : [5, 7],
-        shotsOnTarget: isHomeSg ? [4, 1] : [1, 4],
-      }
-    };
-  }
-
-  if (match.id === 'aff-m2-2' || ((match.teamHome.includes('Indonesia') && match.teamAway.includes('Kamboja')) || (match.teamHome.includes('Kamboja') && match.teamAway.includes('Indonesia')))) {
-    const isHomeId = match.teamHome.includes('Indonesia');
-    return {
-      scoreHome: isHomeId ? 5 : 1,
-      scoreAway: isHomeId ? 1 : 5,
-      status: 'FULL TIME',
-      stadium: 'Gelora Bung Karno Stadium, Jakarta',
-      scorersHome: isHomeId ? ["Ramadhan Sananta 6', 15', 56'", "Sandy Walsh 24'", "Jens Raven 87'"] : ["Nadeo Argawinata 48' (OG)"],
-      scorersAway: isHomeId ? ["Nadeo Argawinata 48' (OG)"] : ["Ramadhan Sananta 6', 15', 56'", "Sandy Walsh 24'", "Jens Raven 87'"],
-      stats: {
-        fouls: isHomeId ? [6, 8] : [8, 6],
-        yellowCards: isHomeId ? [1, 1] : [1, 1],
-        redCards: [0, 0] as [number, number],
-        corners: isHomeId ? [4, 5] : [5, 4],
-        possession: isHomeId ? ["67%", "33%"] : ["33%", "67%"],
-        totalShots: isHomeId ? [17, 1] : [1, 17],
-        shotsOnTarget: isHomeId ? [8, 1] : [1, 8],
-      }
-    };
-  }
-
-  if ((match.teamHome.includes('Timor') && match.teamAway.includes('Vietnam')) || (match.teamHome.includes('Vietnam') && match.teamAway.includes('Timor'))) {
-    const isHomeTL = match.teamHome.includes('Timor');
-    return {
-      scoreHome: isHomeTL ? 0 : 7,
-      scoreAway: isHomeTL ? 7 : 0,
-      status: 'FULL TIME',
-      stadium: 'Chonburi UTA Stadium, Chonburi',
-      scorersHome: isHomeTL ? [] : ["Nguyễn Đình Bắc 14', 32', 55'", "Đỗ Hoàng Hên 61', 78'", "Nguyễn Quang Hải 84'", "Văn Vĩ 89'"],
-      scorersAway: isHomeTL ? ["Nguyễn Đình Bắc 14', 32', 55'", "Đỗ Hoàng Hên 61', 78'", "Nguyễn Quang Hải 84'", "Văn Vĩ 89'"] : [],
-      stats: {
-        fouls: isHomeTL ? [4, 3] : [3, 4],
-        yellowCards: isHomeTL ? [1, 0] : [0, 1],
-        redCards: [0, 0] as [number, number],
-        corners: isHomeTL ? [2, 6] : [6, 2],
-        possession: isHomeTL ? ["40.5%", "59.5%"] : ["59.5%", "40.5%"],
-        totalShots: isHomeTL ? [7, 23] : [23, 7],
-        shotsOnTarget: isHomeTL ? [0, 10] : [10, 0],
-      }
-    };
-  }
-
-  if ((match.teamHome.includes('Kamboja') && match.teamAway.includes('Singapura')) || (match.teamHome.includes('Singapura') && match.teamAway.includes('Kamboja'))) {
-    const isHomeCam = match.teamHome.includes('Kamboja');
-    return {
-      scoreHome: isHomeCam ? 1 : 2,
-      scoreAway: isHomeCam ? 2 : 1,
-      status: 'FULL TIME',
-      stadium: 'Gelora Bung Karno Stadium, Jakarta',
-      scorersHome: isHomeCam ? ["Sieng Chanthea 34'"] : ["Ilhan Fandi 21'", "Shawal Anuar 76'"],
-      scorersAway: isHomeCam ? ["Ilhan Fandi 21'", "Shawal Anuar 76'"] : ["Sieng Chanthea 34'"],
-      stats: {
-        fouls: isHomeCam ? [11, 14] : [14, 11],
-        yellowCards: isHomeCam ? [2, 1] : [1, 2],
-        redCards: [0, 0] as [number, number],
-        corners: isHomeCam ? [4, 5] : [5, 4],
-        possession: isHomeCam ? ["45.2%", "54.8%"] : ["54.8%", "45.2%"],
-        totalShots: isHomeCam ? [9, 13] : [13, 9],
-        shotsOnTarget: isHomeCam ? [3, 6] : [6, 3],
-      }
-    };
-  }
-
-  if ((match.teamHome.includes('Myanmar') && match.teamAway.includes('Malaysia')) || (match.teamHome.includes('Malaysia') && match.teamAway.includes('Myanmar'))) {
-    const isHomeMya = match.teamHome.includes('Myanmar');
-    return {
-      scoreHome: isHomeMya ? 1 : 2,
-      scoreAway: isHomeMya ? 2 : 1,
-      status: 'FULL TIME',
-      stadium: 'Bukit Jalil National Stadium, KL',
-      scorersHome: isHomeMya ? ["Maung Maung Lwin 45'"] : ["Paulo Josué 12', 68'"],
-      scorersAway: isHomeMya ? ["Paulo Josué 12', 68'"] : ["Maung Maung Lwin 45'"],
-      stats: {
-        fouls: isHomeMya ? [13, 12] : [12, 13],
-        yellowCards: isHomeMya ? [3, 2] : [2, 3],
-        redCards: [0, 0] as [number, number],
-        corners: isHomeMya ? [3, 7] : [7, 3],
-        possession: isHomeMya ? ["42.0%", "58.0%"] : ["58.0%", "42.0%"],
-        totalShots: isHomeMya ? [8, 15] : [15, 8],
-        shotsOnTarget: isHomeMya ? [4, 7] : [7, 4],
-      }
-    };
-  }
-
-  if ((match.teamHome.includes('Laos') && match.teamAway.includes('Thailand')) || (match.teamHome.includes('Thailand') && match.teamAway.includes('Laos'))) {
-    const isHomeLao = match.teamHome.includes('Laos');
-    return {
-      scoreHome: isHomeLao ? 0 : 5,
-      scoreAway: isHomeLao ? 5 : 0,
-      status: 'FULL TIME',
-      stadium: 'My Dinh National Stadium, Hanoi',
-      scorersHome: isHomeLao ? [] : ["Kakana Khamyok 18', 52'", "Teerasak Poeiphimai 39'", "Suphanat Mueanta 71'", "Sarach Yooyen 85'"],
-      scorersAway: isHomeLao ? ["Kakana Khamyok 18', 52'", "Teerasak Poeiphimai 39'", "Suphanat Mueanta 71'", "Sarach Yooyen 85'"] : [],
-      stats: {
-        fouls: isHomeLao ? [9, 8] : [8, 9],
-        yellowCards: isHomeLao ? [1, 1] : [1, 1],
-        redCards: [0, 0] as [number, number],
-        corners: isHomeLao ? [1, 9] : [9, 1],
-        possession: isHomeLao ? ["32.5%", "67.5%"] : ["67.5%", "32.5%"],
-        totalShots: isHomeLao ? [4, 19] : [19, 4],
-        shotsOnTarget: isHomeLao ? [1, 11] : [11, 1],
-      }
-    };
-  }
-
-  if (match.id === 'aff-m2-4' || ((match.teamHome.includes('Malaysia') && match.teamAway.includes('Laos')) || (match.teamHome.includes('Laos') && match.teamAway.includes('Malaysia')))) {
-    const isHomeMy = match.teamHome.includes('Malaysia');
-    return {
-      scoreHome: isHomeMy ? 4 : 0,
-      scoreAway: isHomeMy ? 0 : 4,
-      status: 'FULL TIME',
-      stadium: 'Bukit Jalil National Stadium, KL',
-      scorersHome: isHomeMy ? ["Paulo Josué 45'", "Endrick 57'", "Viengxay Sydavong 66' (OG)", "Wan Kuzain 84'"] : [],
-      scorersAway: isHomeMy ? [] : ["Paulo Josué 45'", "Endrick 57'", "Viengxay Sydavong 66' (OG)", "Wan Kuzain 84'"],
-      stats: {
-        fouls: isHomeMy ? [5, 12] : [12, 5],
-        yellowCards: isHomeMy ? [2, 3] : [3, 2],
-        redCards: [0, 0] as [number, number],
-        corners: isHomeMy ? [8, 2] : [2, 8],
-        possession: isHomeMy ? ["70%", "30%"] : ["30%", "70%"],
-        totalShots: isHomeMy ? [16, 8] : [8, 16],
-        shotsOnTarget: isHomeMy ? [7, 3] : [3, 7],
-        offsides: isHomeMy ? [4, 0] : [0, 4]
-      }
-    };
-  }
-
-  const hash = match.id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-  
+  // Fallback for matches that are finished
   let sHome = typeof match.predictedHomeScore === 'number' ? match.predictedHomeScore : (hash % 4);
   let sAway = typeof match.predictedAwayScore === 'number' ? match.predictedAwayScore : ((hash * 3) % 4);
   if (match.predictedHomeScore === '?' || match.predictedAwayScore === '?') {
     sHome = (hash % 3) + 1;
     sAway = (hash % 2);
   }
-
-  const stadiums = [
-    'Gelora Bung Karno Stadium, Jakarta',
-    'Chonburi UTA Stadium, Chonburi',
-    'Bukit Jalil National Stadium, KL',
-    'My Dinh National Stadium, Hanoi',
-    'National Stadium, Singapore'
-  ];
-  const stadium = stadiums[hash % stadiums.length];
-
-  const generateScorers = (team: string, count: number) => {
-    if (count <= 0) return [];
-    const names = teamScorersMap[team] || ['Striker Utama', 'Gelandang Serang', 'Sayap Kanan'];
-    const result: string[] = [];
-    for (let i = 0; i < count; i++) {
-      const name = names[i % names.length];
-      const minute = 15 + ((hash * (i + 3)) % 75);
-      result.push(`${name} (${minute}')`);
-    }
-    return result;
-  };
 
   const foulsHome = 5 + (hash % 10);
   const foulsAway = 6 + ((hash * 2) % 10);
@@ -277,7 +191,7 @@ const getMatchDetails = (match: MatchItem, liveInfo?: any) => {
   const offsidesHome = 1 + (hash % 4);
   const offsidesAway = 1 + ((hash * 3) % 4);
 
-  const details = {
+  return {
     scoreHome: sHome,
     scoreAway: sAway,
     status: 'FULL TIME',
@@ -295,32 +209,6 @@ const getMatchDetails = (match: MatchItem, liveInfo?: any) => {
       shotsOnTarget: [sotHome, sotAway] as [number, number],
     }
   };
-
-  if (liveInfo && (liveInfo.isLive || liveInfo.isFinished)) {
-    const sH = liveInfo.scoreHome !== null && liveInfo.scoreHome !== undefined ? liveInfo.scoreHome : 0;
-    const sA = liveInfo.scoreAway !== null && liveInfo.scoreAway !== undefined ? liveInfo.scoreAway : 0;
-    
-    let sHomeScorers = liveInfo.scorersHome || [];
-    let sAwayScorers = liveInfo.scorersAway || [];
-    
-    if (sHomeScorers.length === 0 && sH > 0) {
-      sHomeScorers = generateScorers(match.teamHome, sH);
-    }
-    if (sAwayScorers.length === 0 && sA > 0) {
-      sAwayScorers = generateScorers(match.teamAway, sA);
-    }
-
-    return {
-      ...details,
-      scoreHome: sH,
-      scoreAway: sA,
-      status: liveInfo.isLive ? `LIVE - ${liveInfo.clock}` : 'FULL TIME',
-      scorersHome: sHomeScorers,
-      scorersAway: sAwayScorers,
-      stats: liveInfo.stats || details.stats
-    };
-  }
-  return details;
 };
 
 interface MatchesSectionProps {
@@ -369,19 +257,25 @@ export const MatchesSection: React.FC<MatchesSectionProps> = () => {
   const getLiveMatchInfo = (match: MatchItem) => {
     // 1. Check if ESPN scoreboard matches this event
     if (espnScoreboard && espnScoreboard.events) {
+      const homeNorm = match.teamHome.toLowerCase().replace(/[^a-z]/g, '');
+      const awayNorm = match.teamAway.toLowerCase().replace(/[^a-z]/g, '');
+
       const matchEvent = espnScoreboard.events.find((ev: any) => {
-        const name = ev.name?.toLowerCase() || '';
-        const homeName = match.teamHome.toLowerCase();
-        const awayName = match.teamAway.toLowerCase();
-        return (name.includes(homeName) && name.includes(awayName)) || 
-               (name.includes(awayName) && name.includes(homeName));
+        const evName = (ev.name || '').toLowerCase().replace(/[^a-z]/g, '');
+        const comps = ev.competitions?.[0]?.competitors || [];
+        const compNames = comps.map((c: any) => (c.team?.displayName || c.team?.name || c.team?.location || '').toLowerCase().replace(/[^a-z]/g, ''));
+
+        const matchesHome = compNames.some((cn: string) => cn.includes(homeNorm) || homeNorm.includes(cn)) || evName.includes(homeNorm);
+        const matchesAway = compNames.some((cn: string) => cn.includes(awayNorm) || awayNorm.includes(cn)) || evName.includes(awayNorm);
+
+        return matchesHome && matchesAway;
       });
       
       if (matchEvent) {
         const status = matchEvent.status;
         const state = status?.type?.state;
         const isLive = state === 'in';
-        const isFinished = state === 'post';
+        const isFinished = state === 'post' || status?.type?.completed === true || status?.type?.shortDetail === 'FT';
         
         let scoreHome = 0;
         let scoreAway = 0;
@@ -494,72 +388,63 @@ export const MatchesSection: React.FC<MatchesSectionProps> = () => {
       }
     }
 
-    // 2. Simulated match progress (Fallback):
-    // Malaysia vs Laos (aff-m2-4) is scheduled for "28 Juli 2026" at "20:00 WIB"
-    if (match.id === 'aff-m2-4' || (match.date.includes('28 Juli 2026') && match.time.includes('20:00'))) {
-      const startTime = new Date('2026-07-28T13:00:00Z'); // 20:00 WIB is 13:00 UTC
-      const diffMs = currentTime.getTime() - startTime.getTime();
+    // 2. Real-time / Dynamic match date calculation (Fallback):
+    const startDate = parseMatchDateTime(match.date, match.time);
+    if (startDate) {
+      const diffMs = currentTime.getTime() - startDate.getTime();
       const diffMinutes = Math.floor(diffMs / 60000);
       const diffSeconds = Math.floor((diffMs % 60000) / 1000);
-      
+
       const isLive = diffMinutes >= 0 && diffMinutes < 105;
-      
+      const isFinished = diffMinutes >= 105;
+
       if (isLive) {
         let secStr = diffSeconds.toString().padStart(2, '0');
+        let clockVal = `${diffMinutes}'`;
         if (diffMinutes >= 45 && diffMinutes < 60) {
-          return {
-            isLive: true,
-            isFinished: false,
-            clock: 'HT',
-            scoreHome: 1,
-            scoreAway: 0,
-            fromESPN: false,
-            scorersHome: ["Paulo Josué (15')"],
-            scorersAway: []
-          };
-        }
-        
-        let displayMin = diffMinutes;
-        if (diffMinutes >= 60) {
-          displayMin = diffMinutes - 15;
-        }
-        
-        let clockVal = `${displayMin}:${secStr}`;
-        if (displayMin > 90) {
-          clockVal = `90+${displayMin - 90}`;
+          clockVal = 'HT';
+        } else if (diffMinutes >= 60 && diffMinutes < 105) {
+          clockVal = `${diffMinutes - 15}':${secStr}`;
+        } else if (diffMinutes >= 105) {
+          clockVal = `90+${diffMinutes - 105}'`;
+        } else {
+          clockVal = `${diffMinutes}:${secStr}`;
         }
 
-        let simHome = 0;
-        const simScorersHome: string[] = [];
-        if (diffMinutes >= 15) {
-          simHome = 1;
-          simScorersHome.push("Paulo Josué (15')");
-        }
-        if (diffMinutes >= 68) {
-          simHome = 2;
-          simScorersHome.push("Arif Aiman (68')");
-        }
-        if (diffMinutes >= 80) {
-          simHome = 3;
-          simScorersHome.push("Safawi Rasid (80')");
-        }
+        const matchDetails = getMatchDetails(match, undefined, currentTime);
 
         return {
           isLive: true,
           isFinished: false,
           clock: clockVal,
-          scoreHome: simHome,
-          scoreAway: 0,
+          scoreHome: matchDetails.scoreHome !== '-' ? matchDetails.scoreHome : 0,
+          scoreAway: matchDetails.scoreAway !== '-' ? matchDetails.scoreAway : 0,
           fromESPN: false,
-          scorersHome: simScorersHome,
-          scorersAway: []
+          scorersHome: matchDetails.scorersHome,
+          scorersAway: matchDetails.scorersAway,
+          stats: matchDetails.stats
+        };
+      }
+
+      if (isFinished) {
+        const matchDetails = getMatchDetails(match, undefined, currentTime);
+        return {
+          isLive: false,
+          isFinished: true,
+          clock: 'FT',
+          scoreHome: matchDetails.scoreHome !== '-' ? matchDetails.scoreHome : 0,
+          scoreAway: matchDetails.scoreAway !== '-' ? matchDetails.scoreAway : 0,
+          fromESPN: false,
+          scorersHome: matchDetails.scorersHome,
+          scorersAway: matchDetails.scorersAway,
+          stats: matchDetails.stats
         };
       }
     }
 
     return {
       isLive: false,
-      isFinished: isMatchFinished(match),
+      isFinished: isMatchFinished(match, currentTime),
       clock: '',
       scoreHome: null,
       scoreAway: null,
@@ -685,8 +570,8 @@ export const MatchesSection: React.FC<MatchesSectionProps> = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 pt-2">
             {filteredMatches.map((match) => {
               const liveInfo = getLiveMatchInfo(match);
-              const isFinished = liveInfo.isLive ? false : (liveInfo.isFinished !== undefined ? liveInfo.isFinished : isMatchFinished(match));
-              const details = getMatchDetails(match, liveInfo);
+              const isFinished = liveInfo.isLive ? false : (liveInfo.isFinished !== undefined ? liveInfo.isFinished : isMatchFinished(match, currentTime));
+              const details = getMatchDetails(match, liveInfo, currentTime);
               return (
               <div
                 key={match.id}
@@ -872,7 +757,7 @@ export const MatchesSection: React.FC<MatchesSectionProps> = () => {
         {/* Match Statistics Modal */}
         {selectedMatch && (() => {
           const liveInfo = getLiveMatchInfo(selectedMatch);
-          const details = getMatchDetails(selectedMatch, liveInfo);
+          const details = getMatchDetails(selectedMatch, liveInfo, currentTime);
           return (
             <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm animate-fade-in" onClick={() => setSelectedMatch(null)}>
               <div

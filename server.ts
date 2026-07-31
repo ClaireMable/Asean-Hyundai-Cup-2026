@@ -28,9 +28,15 @@ async function startServer() {
   // ESPN Scoreboard Endpoint
   app.get("/api/espn/scoreboard", async (req, res) => {
     try {
-      let response = await fetch("https://site.api.espn.com/apis/site/v2/sports/soccer/aff.championship/scoreboard");
+      const dates = (req.query.dates as string) || "20260724-20260826";
+      const headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "Accept": "application/json",
+      };
+      
+      let response = await fetch(`https://site.api.espn.com/apis/site/v2/sports/soccer/aff.championship/scoreboard?dates=${dates}`, { headers });
       if (!response.ok) {
-        response = await fetch("https://site.api.espn.com/apis/site/v2/sports/soccer/asean.championship/scoreboard");
+        response = await fetch(`https://site.api.espn.com/apis/site/v2/sports/soccer/asean.championship/scoreboard?dates=${dates}`, { headers });
       }
       
       if (response.ok) {
@@ -48,9 +54,14 @@ async function startServer() {
   // ESPN Statistics Endpoint
   app.get("/api/espn/stats", async (req, res) => {
     try {
-      let response = await fetch("https://site.api.espn.com/apis/site/v2/sports/soccer/aff.championship/statistics");
+      const headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "Accept": "application/json",
+      };
+      
+      let response = await fetch("https://site.api.espn.com/apis/site/v2/sports/soccer/aff.championship/statistics", { headers });
       if (!response.ok) {
-        response = await fetch("https://site.api.espn.com/apis/site/v2/sports/soccer/asean.championship/statistics");
+        response = await fetch("https://site.api.espn.com/apis/site/v2/sports/soccer/asean.championship/statistics", { headers });
       }
       
       if (response.ok) {
@@ -68,9 +79,14 @@ async function startServer() {
   // ESPN Standings Endpoint
   app.get("/api/espn/standings", async (req, res) => {
     try {
-      let response = await fetch("https://site.api.espn.com/apis/v2/sports/soccer/aff.championship/standings");
+      const headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "Accept": "application/json",
+      };
+      
+      let response = await fetch("https://site.api.espn.com/apis/v2/sports/soccer/aff.championship/standings", { headers });
       if (!response.ok) {
-        response = await fetch("https://site.api.espn.com/apis/v2/sports/soccer/asean.championship/standings");
+        response = await fetch("https://site.api.espn.com/apis/v2/sports/soccer/asean.championship/standings", { headers });
       }
       
       if (response.ok) {

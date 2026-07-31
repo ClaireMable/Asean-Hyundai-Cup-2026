@@ -20,6 +20,7 @@ const COUNTRY_CODE_MAP: Record<string, string> = {
   my: 'my',
 
   singapura: 'sg',
+  singapore: 'sg',
   '🇸🇬': 'sg',
   sg: 'sg',
 
